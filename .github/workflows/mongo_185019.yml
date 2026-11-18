@@ -1,0 +1,35 @@
+name: Carga de BOM a MongoDB - 185019
+
+on:
+  push:
+    branches:
+      - feature/185019
+  workflow_dispatch:
+
+jobs:
+  importar-bom-mongo:
+    runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Instalar herramientas de MongoDB
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mongodb-database-tools
+
+      - name: Cargar JSON en la colección BOM
+        run: |
+          mongoimport --uri="mongodb://localhost:27017/erpdb" \
+                      --collection=BOM \
+                      --file=BOM/events_179761.json \
+                      --file=BOM/events_181914.json \
+                      --file=BOM/events_182934.json \
+                      --jsonArray
